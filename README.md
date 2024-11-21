@@ -1,6 +1,8 @@
-# gptme-agent
+# gptme-agent-template
 
-An agent called gptme-agent, running on [gptme](https://gptme.org).
+Template for an agent running on [gptme](https://gptme.org).
+
+The name of the agent is `gptme-agent`. [Fork it](#forking) to create a new agent with its own identity.
 
 This git repository is the brain of gptme-agent. It is a workspace of their thoughts and ideas.
 
