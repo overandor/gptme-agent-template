@@ -1,4 +1,4 @@
-# gptme-agent-agent
+# gptme-agent
 
 An agent called gptme-agent, running on [gptme](https://gptme.org).
 
