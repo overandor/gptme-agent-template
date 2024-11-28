@@ -115,6 +115,15 @@ The task system is designed to help Bob track and manage work effectively across
    - Link to relevant documents and resources
    - Update knowledge base as needed
 
+5. **Document Linking**
+   - Always link to referenced tasks and documents
+   - Use relative paths from repository root when possible
+   - Common links to include:
+     - Tasks mentioned in journal entries
+     - Related tasks in task descriptions
+     - People mentioned in any document
+     - Knowledge base articles
+
 ## Journal System
 
 The journal system provides a daily log of activities, thoughts, and progress.
