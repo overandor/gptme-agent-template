@@ -1,5 +1,7 @@
 # gptme-agent-template
 
+[![built using gptme](https://img.shields.io/badge/built%20using-gptme%20%F0%9F%A4%96-5151f5?style=flat)](https://github.com/ErikBjare/gptme)
+
 Template for an agent running on [gptme](https://gptme.org).
 
 The name of the agent is `gptme-agent`. [Fork it](#forking) to create a new agent with its own identity.
@@ -18,7 +20,6 @@ Information about gptme-agent's harness and architecture can be found in [`ARCHI
 Run gptme-agent with:
 
 ```sh
-# install gptme
 pipx install gptme
 
 # optional (but recommended): setup pre-commit hooks
