@@ -3,10 +3,13 @@
 [![built using gptme](https://img.shields.io/badge/built%20using-gptme%20%F0%9F%A4%96-5151f5?style=flat)](https://github.com/ErikBjare/gptme)
 
 <!--template-->
-Template for an agent running on [gptme](https://gptme.org).
+> [!NOTE]
+> This is a template for a [gptme](https://gptme.org)-based agent.
+>
+> [Fork it](#forking) to create a new agent with its own identity.
 <!--/template-->
 
-The name of the agent is `gptme-agent`. [Fork it](#forking) to create a new agent with its own identity.
+The name of the agent is gptme-agent.
 
 This git repository is the brain of gptme-agent. It is a workspace of their thoughts and ideas.
 
