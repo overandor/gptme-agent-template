@@ -46,37 +46,53 @@ mkdir -p "${TARGET_DIR}"/{journal,tasks/{all,active,done,new,paused,cancelled,te
 echo "Copying core files..."
 
 function copy_file() {
-    # copies file/directory
-    cp -r "${SOURCE_DIR}/$1" "${TARGET_DIR}/"
-    # replaces NAME_TEMPLATE with NEW_AGENT in file contents
-    find "${TARGET_DIR}/$1" -type f -exec sed -i '' "s/${NAME_TEMPLATE}/${NEW_AGENT}/g" {} \;
-    # runs chmod +x on scripts
-    find "${TARGET_DIR}/$1" -type f -name "*.sh" -exec chmod +x {} \;
+    local src="${SOURCE_DIR}/$1"
+    local dst="${TARGET_DIR}/$1"
+
+    # Create target directory if copying a directory
+    if [ -d "$src" ]; then
+        mkdir -p "$dst"
+        cp -r "$src/"* "$dst/"
+    else
+        # Ensure parent directory exists for files
+        mkdir -p "$(dirname "$dst")"
+        cp -r "$src" "$dst"
+    fi
+
+    # Process all files, whether dst is a file or directory
+    find "$dst" -type f -print0 | while IFS= read -r -d '' file; do
+        # Replace template strings
+        perl -i -pe "s/${NAME_TEMPLATE}/${NEW_AGENT}/g" "$file"
+        perl -i -pe "s/${NAME_TEMPLATE}-template/${NEW_AGENT}/g" "$file"
+        # Strip template comments
+        perl -i -pe 'BEGIN{undef $/;} s/<!--template-->.*?<!--\/template-->//gs' "$file"
+    done
+
+    # Make shell scripts executable
+    find "$dst" -type f -name "*.sh" -exec chmod +x {} \;
 }
 
 # Core documentation and configuration
-copy_file Makefile
+copy_file README.md
+cp "${SOURCE_DIR}/Makefile" "${TARGET_DIR}/Makefile"  # copy without replacing NAME_TEMPLATE
 copy_file ARCHITECTURE.md
 copy_file .pre-commit-config.yaml
 copy_file scripts
 copy_file run.sh
-# replace gptme-agent with the new agent name
-cat "${SOURCE_DIR}/fork.sh" | sed "s/gptme-agent/${NEW_AGENT}/g" > "${TARGET_DIR}/fork.sh"
-chmod +x "${TARGET_DIR}/fork.sh"
+copy_file fork.sh
 
 # Copy base knowledge
-cp "${SOURCE_DIR}/knowledge/agent-forking.md" "${TARGET_DIR}/knowledge/"
-cp "${SOURCE_DIR}/knowledge/forking-workspace.md" "${TARGET_DIR}/knowledge/"
+copy_file knowledge/agent-forking.md
+copy_file knowledge/forking-workspace.md
 
-# Copy person template
-cp "${SOURCE_DIR}/people/templates/"* "${TARGET_DIR}/people/templates/" 2>/dev/null || true
-cat "${SOURCE_DIR}/people/templates/person.md" | sed "s/${NAME_TEMPLATE}/${NEW_AGENT}/g" > "${TARGET_DIR}/people/templates/person.md"
+# Copy template
+copy_file */templates/*.md
 
 # Initialize tasks
 echo "# No Active Task" > "${TARGET_DIR}/tasks/all/no-active-task.md"
 
 # Initial setup task from template
-cp "${SOURCE_DIR}/tasks/templates/initial-agent-setup.md" "${TARGET_DIR}/tasks/templates/"
+copy_file tasks/templates/initial-agent-setup.md
 cp "${SOURCE_DIR}/tasks/templates/initial-agent-setup.md" "${TARGET_DIR}/tasks/all/"
 ln -sf "../all/initial-agent-setup.md" "${TARGET_DIR}/tasks/active/"
 ln -sf "./tasks/all/initial-agent-setup.md" "${TARGET_DIR}/CURRENT_TASK.md"
@@ -107,14 +123,6 @@ cat > "${TARGET_DIR}/ABOUT.md" << EOL
 ## Values
 [Core values and principles]
 EOL
-
-# Create README
-# Replace occurrences of NAME_TEMPLATE with NEW_AGENT
-# Strip any <!--template--><!--/template--> comments
-cat "${SOURCE_DIR}/README.md" |
-    sed "s/${NAME_TEMPLATE}-template/${NEW_AGENT}/g" |
-    sed "s/${NAME_TEMPLATE}/${NEW_AGENT}/g" |
-    sed '/<!--template-->/, /<!--\/template-->/d' > "${TARGET_DIR}/README.md"
 
 # Create initial TASKS.md with setup as first task
 cat > "${TARGET_DIR}/TASKS.md" << EOL
@@ -162,14 +170,16 @@ cat > "${TARGET_DIR}/people/creator.md" << EOL
 EOL
 
 # Initialize git
-(cd "${TARGET_DIR}" && git init && git add . && git commit -m "feat: initialize ${NEW_AGENT} agent workspace")
+(cd "${TARGET_DIR}" && git init)
 
-# Run checks
-echo
-echo "Running pre-commit checks..."
-(cd "${TARGET_DIR}" && pre-commit run --all-files)
+# Install pre-commit hooks
+(cd "${TARGET_DIR}" && pre-commit install)
 
-(cd "${TARGET_DIR}" && ./run.sh --dry-run)
+# Commit initial files
+(cd "${TARGET_DIR}" && git add . && git commit -m "feat: initialize ${NEW_AGENT} agent workspace")
+
+# Dry run the agent to check for errors
+(cd "${TARGET_DIR}" && ./run.sh --dry-run > /dev/null)
 
 TARGET_DIR_RELATIVE="./$(realpath --relative-to="$(pwd)" "${TARGET_DIR}")"
 
