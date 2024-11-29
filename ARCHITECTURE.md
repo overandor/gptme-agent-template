@@ -11,7 +11,6 @@ This workspace implements a forkable agent architecture, designed to be used as 
 ## Search & Navigation
 
 The workspace provides several ways to search and navigate content:
-
 - Quick search:
   ```sh
   # Find files containing term
@@ -34,7 +33,6 @@ The workspace provides several ways to search and navigate content:
   - knowledge/ - Documentation
 
 ## Task System
-
 The task system is designed to help track and manage work effectively across sessions.
 
 ### Components
@@ -70,7 +68,7 @@ The task system is designed to help track and manage work effectively across ses
 ### Task Lifecycle
 
 0. **Retrieval**
-   - Retrieve context needed to plan the task
+   - Retrieve context needed to plan the task using the search tools described in "Search & Navigation" above
    - Review tasks/all/no-active-task.md if starting fresh
 
 1. **Creation**

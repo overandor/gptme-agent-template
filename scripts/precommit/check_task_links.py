@@ -27,21 +27,21 @@ Usage:
 Supported Types:
     tasks:
         State Directories:
-        - tasks/new/: New tasks
-        - tasks/active/: Active tasks
-        - tasks/paused/: Paused tasks
-        - tasks/done/: Completed tasks
-        - tasks/cancelled/: Cancelled tasks
+            - tasks/new/: New tasks
+            - tasks/active/: Active tasks
+            - tasks/paused/: Paused tasks
+            - tasks/done/: Completed tasks
+            - tasks/cancelled/: Cancelled tasks
         Special Cases:
-        - no-active-task.md: Should not have any symlinks
-        - CURRENT_TASK.md: Should be a valid symlink
+            - no-active-task.md: Should not have any symlinks
+            - CURRENT_TASK.md: Should be a valid symlink
 
     tweets:
         State Directories:
-        - tweets/new/: New tweets
-        - tweets/queued/: Tweets awaiting review
-        - tweets/approved/: Tweets ready to post
-        - tweets/posted/: Published tweets
+            - tweets/new/: New tweets
+            - tweets/queued/: Tweets awaiting review
+            - tweets/approved/: Tweets ready to post
+            - tweets/posted/: Published tweets
 
 Error Reporting:
     Reports issues in format:

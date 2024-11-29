@@ -30,14 +30,15 @@ AGENT_PATH=$1
 function run_codeblock() {
     # usage: run_codeblock diff "file1" "file2"
     # outputs the result of a command as a ```<command> codeblock
-    echo "Running command: $@"
+    echo
     echo "\`\`\`$@"
     eval "$@" || true
     echo "\`\`\`"
+    echo
 }
 
 function diff_codeblock() {
-    run_codeblock diff -r "$1" "$AGENT_PATH/$2"
+    run_codeblock diff -u -r "$1" "$AGENT_PATH/$1"
 }
 
 # Store diffs in a variable
@@ -62,7 +63,19 @@ if [ "$response" != "y" ]; then
   exit 0
 fi
 
-printf "%s\n" "$diffs" | gptme "We want to sync the changes in our agent with the upstream agent-template, either repo may have the best and latest changes, so you need to determine which to choose. Here are the changes we found"
+printf "%s\n" "$diffs" | gptme "We need to synchronize changes between two repositories:
+1. The template repository (source of core functionality and best practices)
+2. The agent instance (which may have improvements that should be upstreamed)
+
+For each difference found, please:
+- Analyze whether the change belongs in the template, the instance, or both
+- Consider:
+  - Is it a generic improvement that benefits all agents? (→ template)
+  - Is it instance-specific customization? (→ instance)
+  - Is it a bug fix or enhancement that works for both? (→ both)
+  - Does it maintain separation between template and instance concerns?
+
+Here are the differences found. Please analyze each and suggest appropriate synchronization:"
 
 # Exit with the status of the last command
 exit $?
