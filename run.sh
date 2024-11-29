@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Parse arguments
 DRY_RUN=false
 

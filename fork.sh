@@ -23,6 +23,8 @@ mkdir -p "$(dirname "$TARGET_DIR")"
 # If a name is provided, use it
 # Else, extract agent name from the last directory component, whether it has -agent suffix or not
 NEW_AGENT="${2:-$(basename "$TARGET_DIR" | sed 's/-agent$//')}"
+# Name of agent in template, to be replaced
+NAME_TEMPLATE="gptme-agent"
 
 # Check if directory exists
 if [ -d "$TARGET_DIR" ]; then
@@ -43,14 +45,23 @@ mkdir -p "${TARGET_DIR}"/{journal,tasks/{all,active,done,new,paused,cancelled,te
 # Copy core files and directories
 echo "Copying core files..."
 
+function copy_file() {
+    # copies file/directory
+    cp -r "${SOURCE_DIR}/$1" "${TARGET_DIR}/"
+    # replaces NAME_TEMPLATE with NEW_AGENT in file contents
+    find "${TARGET_DIR}/$1" -type f -exec sed -i '' "s/${NAME_TEMPLATE}/${NEW_AGENT}/g" {} \;
+    # runs chmod +x on scripts
+    find "${TARGET_DIR}/$1" -type f -name "*.sh" -exec chmod +x {} \;
+}
+
 # Core documentation and configuration
-cp "${SOURCE_DIR}/Makefile" "${TARGET_DIR}/"
-cp "${SOURCE_DIR}/ARCHITECTURE.md" "${TARGET_DIR}/"
-cp "${SOURCE_DIR}/.pre-commit-config.yaml" "${TARGET_DIR}/"
-cp -r "${SOURCE_DIR}/scripts/precommit" "${TARGET_DIR}/scripts"
-cp "${SOURCE_DIR}/run.sh" "${TARGET_DIR}/"
-chmod +x "${TARGET_DIR}/run.sh"
-cp "${SOURCE_DIR}/fork.sh" "${TARGET_DIR}/"
+copy_file Makefile
+copy_file ARCHITECTURE.md
+copy_file .pre-commit-config.yaml
+copy_file scripts
+copy_file run.sh
+# replace gptme-agent with the new agent name
+cat "${SOURCE_DIR}/fork.sh" | sed "s/gptme-agent/${NEW_AGENT}/g" > "${TARGET_DIR}/fork.sh"
 chmod +x "${TARGET_DIR}/fork.sh"
 
 # Copy base knowledge
@@ -59,6 +70,7 @@ cp "${SOURCE_DIR}/knowledge/forking-workspace.md" "${TARGET_DIR}/knowledge/"
 
 # Copy person template
 cp "${SOURCE_DIR}/people/templates/"* "${TARGET_DIR}/people/templates/" 2>/dev/null || true
+cat "${SOURCE_DIR}/people/templates/person.md" | sed "s/${NAME_TEMPLATE}/${NEW_AGENT}/g" > "${TARGET_DIR}/people/templates/person.md"
 
 # Initialize tasks
 echo "# No Active Task" > "${TARGET_DIR}/tasks/all/no-active-task.md"
@@ -97,55 +109,12 @@ cat > "${TARGET_DIR}/ABOUT.md" << EOL
 EOL
 
 # Create README
-cat > "${TARGET_DIR}/README.md" << EOL
-# ${NEW_AGENT}-agent
-
-An agent called ${NEW_AGENT}, running on [gptme](https://gptme.org).
-
-This git repository is the brain of ${NEW_AGENT}. It is a workspace of their thoughts and ideas.
-
- - ${NEW_AGENT} will write their thoughts, plans, and ideas in this repository.
- - ${NEW_AGENT}'s agent harness, including this repo, is in-progress.
- - ${NEW_AGENT} is encouraged to suggest improvements to their harness.
-
-Information about ${NEW_AGENT} can be found in [\`ABOUT.md\`](./ABOUT.md), including their personality and goals.
-Information about ${NEW_AGENT}'s harness and architecture can be found in [\`ARCHITECTURE.md\`](./ARCHITECTURE.md).
-
-## Usage
-
-Run ${NEW_AGENT} with:
-
-\`\`\`sh
-# install gptme
-pipx install gptme
-
-# optional (but recommended): setup pre-commit hooks
-pipx install pre-commit
-make install
-
-# run ${NEW_AGENT}
-./run.sh "<prompt>"
-\`\`\`
-
-## Forking
-
-You can create a clean fork of ${NEW_AGENT} by running:
-
-\`\`\`sh
-./fork.sh <path> [<agent-name>]
-\`\`\`
-
-Then simply follow the instructions in the output.
-
-## Workspace Structure
-
- - ${NEW_AGENT} keeps track of tasks in [\`TASKS.md\`](./TASKS.md)
- - ${NEW_AGENT} writes about the current task in [\`CURRENT_TASK.md\`](./CURRENT_TASK.md)
- - ${NEW_AGENT} keeps a journal in [\`./journal/\`](./journal/)
- - ${NEW_AGENT} keeps a knowledge base in [\`./knowledge/\`](./knowledge/)
- - ${NEW_AGENT} maintains profiles of people in [\`./people/\`](./people/)
- - ${NEW_AGENT} can add files to [\`gptme.toml\`](./gptme.toml) to always include them in their context
-EOL
+# Replace occurrences of NAME_TEMPLATE with NEW_AGENT
+# Strip any <!--template--><!--/template--> comments
+cat "${SOURCE_DIR}/README.md" |
+    sed "s/${NAME_TEMPLATE}-template/${NEW_AGENT}/g" |
+    sed "s/${NAME_TEMPLATE}/${NEW_AGENT}/g" |
+    sed '/<!--template-->/, /<!--\/template-->/d' > "${TARGET_DIR}/README.md"
 
 # Create initial TASKS.md with setup as first task
 cat > "${TARGET_DIR}/TASKS.md" << EOL
@@ -199,6 +168,8 @@ EOL
 echo
 echo "Running pre-commit checks..."
 (cd "${TARGET_DIR}" && pre-commit run --all-files)
+
+(cd "${TARGET_DIR}" && ./run.sh --dry-run)
 
 TARGET_DIR_RELATIVE="./$(realpath --relative-to="$(pwd)" "${TARGET_DIR}")"
 

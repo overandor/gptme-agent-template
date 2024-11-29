@@ -2,7 +2,7 @@
 
 ## Overview
 
-Bob's architecture serves as a foundation for creating new agents through forking. Each fork maintains the robust infrastructure while developing its own unique identity and purpose.
+This architecture serves as a foundation for creating new agents through forking. Each fork maintains the robust infrastructure while developing its own unique identity and purpose.
 
 ## Quick Start
 

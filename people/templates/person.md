@@ -2,7 +2,7 @@
 
 ## Basic Information
 - Name:
-- Relationship to Bob:
+- Relationship to gptme-agent:
 - First interaction:
 - Last interaction:
 

@@ -4,6 +4,14 @@ install:
 	# install pre-commit hooks
 	pre-commit install
 
+check-names:
+	@# If we are in gptme-agent-template, we should have no instance-specific names, and vice versa
+	@if [ "$(shell basename $(CURDIR))" = "gptme-agent-template" ]; then \
+		! git grep -i "bob\|alice" -- ':!Makefile' ':!fork.sh'; \
+	else \
+		! git grep -i "gptme-agent" -- ':!Makefile'; \
+	fi
+
 # Run pre-commit checks and stage only previously staged files
 # Can be ran before pre-commit to make formatting and safe fixes not fail the commit
 # NOTE: this isn't entirely safe, as it will add the entirety of any partially staged files

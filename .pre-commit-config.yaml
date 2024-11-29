@@ -19,6 +19,13 @@ repos:
     args: [--ignore-missing-imports, --check-untyped-defs]
 - repo: local
   hooks:
+  - id: check-names
+    name: Check for agent-instance names
+    description: Verifies that we are not accidentally using names of agents in the template, or vice versa
+    entry: make check-names
+    language: system
+    pass_filenames: false
+    always_run: true
   - id: check-markdown-links
     name: Check markdown links
     description: Verifies all relative links in markdown files resolve correctly
@@ -31,7 +38,7 @@ repos:
   - id: check-task-links
     name: Check task symlinks
     description: Verifies task files have exactly one valid symlink in a state directory
-    entry: python3 scripts/precommit/check_task_links.py
+    entry: python3 scripts/precommit/check_task_links.py --type tasks
     language: system
     pass_filenames: false
     always_run: true

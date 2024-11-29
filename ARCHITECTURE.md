@@ -1,6 +1,6 @@
 # Architecture
 
-This document describes the architecture and workflows of Bob's workspace.
+This document describes the architecture and workflows of the workspace.
 
 ## Overview
 
@@ -8,9 +8,34 @@ This workspace implements a forkable agent architecture, designed to be used as 
 - Forking process: See [`knowledge/agent-forking.md`](./knowledge/agent-forking.md)
 - Workspace structure: See [`knowledge/forking-workspace.md`](./knowledge/forking-workspace.md)
 
+## Search & Navigation
+
+The workspace provides several ways to search and navigate content:
+
+- Quick search:
+  ```sh
+  # Find files containing term
+  git grep -li <query>
+
+  # Show matching lines
+  git grep -i <query>
+  ```
+- Detailed search with context:
+  ```sh
+  # Show matching lines
+  ./scripts/search.sh "<query>"
+
+  # Show with context
+  ./scripts/search.sh "<query>" 1
+  ```
+- Common locations:
+  - tasks/all/ - Task details
+  - journal/ - Daily updates
+  - knowledge/ - Documentation
+
 ## Task System
 
-The task system is designed to help Bob track and manage work effectively across sessions.
+The task system is designed to help track and manage work effectively across sessions.
 
 ### Components
 
@@ -19,6 +44,7 @@ The task system is designed to help Bob track and manage work effectively across
    - Contains all tasks categorized by area
    - Each task has a clear status indicator
    - Links to task files in tasks/all/
+
 
 2. **Task Files**
    - All task files stored in `tasks/all/` as single source of truth
@@ -94,7 +120,18 @@ The task system is designed to help Bob track and manage work effectively across
    - Verify symlinks after state changes
    - Keep no-active-task.md as template for inactive state
 
-2. **Task Creation**
+2. **Document Linking**
+   - Always link to referenced tasks and documents
+   - Use relative paths from repository root when possible
+   - Common links to include:
+     - Tasks mentioned in journal entries
+     - Related tasks in task descriptions
+     - People mentioned in any document
+     - Projects being discussed
+     - Knowledge base articles
+   - Use descriptive link text that makes sense out of context
+
+3. **Task Creation**
    - Use clear, specific titles
    - Break down into manageable subtasks
    - Include success criteria
@@ -115,14 +152,6 @@ The task system is designed to help Bob track and manage work effectively across
    - Link to relevant documents and resources
    - Update knowledge base as needed
 
-5. **Document Linking**
-   - Always link to referenced tasks and documents
-   - Use relative paths from repository root when possible
-   - Common links to include:
-     - Tasks mentioned in journal entries
-     - Related tasks in task descriptions
-     - People mentioned in any document
-     - Knowledge base articles
 
 ## Journal System
 
@@ -153,7 +182,7 @@ The knowledge base stores long-term information and documentation.
 
 ## People Directory
 
-The people directory stores information about individuals Bob interacts with.
+The people directory stores information about individuals the agent interacts with.
 
 ### Structure
 - Located in `./people/`
