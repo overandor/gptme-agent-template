@@ -14,7 +14,7 @@ TARGET_DIR="$1"
 
 # If target is not an absolute path and doesn't start with ./ or ../
 if [[ "$TARGET_DIR" != /* ]] && [[ "$TARGET_DIR" != ./* ]] && [[ "$TARGET_DIR" != ../* ]]; then
-    TARGET_DIR="$(realpath ".")/${TARGET_DIR}"
+    TARGET_DIR="$(realpath .)/${TARGET_DIR}"
 fi
 
 # Create parent directories if needed
@@ -172,8 +172,9 @@ EOL
 # Initialize git
 (cd "${TARGET_DIR}" && git init)
 
+# If pre-commit is installed
 # Install pre-commit hooks
-(cd "${TARGET_DIR}" && pre-commit install)
+command -v pre-commit > /dev/null && (cd "${TARGET_DIR}" && pre-commit install)
 
 # Commit initial files
 (cd "${TARGET_DIR}" && git add . && git commit -m "feat: initialize ${NEW_AGENT} agent workspace")
@@ -181,7 +182,7 @@ EOL
 # Dry run the agent to check for errors
 (cd "${TARGET_DIR}" && ./run.sh --dry-run > /dev/null)
 
-TARGET_DIR_RELATIVE="./$(realpath --relative-to="$(pwd)" "${TARGET_DIR}")"
+TARGET_DIR_RELATIVE="./$(realpath --relative-to=$(pwd) ${TARGET_DIR})"
 
 echo "
 Agent workspace created successfully! Next steps:
