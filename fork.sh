@@ -62,8 +62,8 @@ function copy_file() {
     # Process all files, whether dst is a file or directory
     find "$dst" -type f -print0 | while IFS= read -r -d '' file; do
         # Replace template strings
-        perl -i -pe "s/${NAME_TEMPLATE}/${NEW_AGENT}/g" "$file"
         perl -i -pe "s/${NAME_TEMPLATE}-template/${NEW_AGENT}/g" "$file"
+        perl -i -pe "s/${NAME_TEMPLATE}/${NEW_AGENT}/g" "$file"
         # Strip template comments
         perl -i -pe 'BEGIN{undef $/;} s/<!--template-->.*?<!--\/template-->//gs' "$file"
     done
