@@ -1,5 +1,7 @@
 .PHONY: precommit format
 
+PAGER=cat
+
 install:
 	# install pre-commit hooks
 	pre-commit install
