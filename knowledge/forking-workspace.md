@@ -9,11 +9,10 @@ This document describes what remains and what gets cleared when forking an agent
 ├── README.md               # Overview (template remains, content updated)
 ├── ABOUT.md               # Agent identity (cleared and customized)
 ├── ARCHITECTURE.md        # System architecture (remains)
-├── CURRENT_TASK.md        # Symlink to active task (reset to no-active-task.md)
+├── TOOLS.md               # Tool integrations (remains)
 ├── gptme.toml            # Config file (template remains, paths updated)
 ├── tasks/                # Task management (structure remains, content cleared)
 │   ├── active/          # Current tasks
-│   ├── all/            # Source of truth
 │   ├── done/           # Completed tasks
 │   └── ...             # Other task states
 ├── journal/             # Daily logs (cleared)
